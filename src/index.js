@@ -28,19 +28,22 @@ const posts = [
         id: '10',
         title: 'GraphQL 101',
         body: 'Welcome to GraphQL course',
-        published: true
+        published: true,
+        author: '1'
     },
     {
         id: '11',
         title: 'Node.js 101',
         body: 'Welcome to Node.js course',
-        published: true
+        published: true,
+        author: '1'
     },
     {
         id: '12',
         title: 'Angular 101',
         body: '',
-        published: false
+        published: false,
+        author: '2'
     },
 ]
 
@@ -63,6 +66,7 @@ const typeDefs = `
         title: String!
         body: String!
         published: Boolean!
+        author: User!
     }
 `
 
@@ -102,6 +106,13 @@ const resolvers = {
                 body: 'Welcome',
                 published: true
             }
+        }
+    },
+    Post: {
+        author(parent, args, ctx, info) {
+            return users.find((user) => {
+                return user.id === parent.author
+            })
         }
     }
 }
