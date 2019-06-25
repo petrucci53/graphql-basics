@@ -59,7 +59,8 @@ const typeDefs = `
         id: ID!
         name: String!
         email: String!
-        age: Int
+        age: Int,
+        posts: [Post!]!
     }
     type Post {
         id: ID!
@@ -74,7 +75,7 @@ const typeDefs = `
 const resolvers = {
     Query: {
         users(parents, args, ctx, info) {
-            if (!args.query) {
+            if (!args.query) { // Notice that 'query' is defined as a parameter name in type-def string (Line 53)
                 return users
             }
             return users.filter((user) => {
@@ -108,10 +109,17 @@ const resolvers = {
             }
         }
     },
-    Post: {
+    Post: { //Here we're defining the resolver methods of the type "Post".
         author(parent, args, ctx, info) {
             return users.find((user) => {
                 return user.id === parent.author
+            })
+        }
+    },
+    User: { //Here we're defining the resolver methods of the type "User".
+        posts(parent, args, ctx, info) {
+            return posts.filter((post) => {
+                return post.author === parent.id
             })
         }
     }
