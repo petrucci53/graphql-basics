@@ -2,27 +2,27 @@ import {GraphQLServer} from "graphql-yoga"
 
 // Scalar Types - String, Boolean, Int, Float, ID
 
-// Demo user data
+// Dummy user data
 const users = [
     {
         id: '1',
         name: 'Steve',
-        email: 'steve.jobs@example.com',
+        email: 'steve.jobs@apple.com',
         age: 55
     },
     {
         id: '2',
         name: 'Mark',
-        email: 'mark.zuckerberg@example.com'
+        email: 'mark.zuckerberg@facebook.com'
     },
     {
         id: '3',
         name: 'Elon',
-        email: 'elon.musk@example.com'
+        email: 'elon.musk@tesla.com'
     }
 ]
 
-// Demo post data
+// Dummy post data
 const posts = [
     {
         id: '10',
@@ -47,11 +47,40 @@ const posts = [
     },
 ]
 
+// Dummy comments data
+const comments = [
+    {
+        id: '102',
+        text: "She's got a smile that it seems to me...Reminds me of childhood memories..",
+        author: '1',
+        post: '10'
+    },
+    {
+        id: '103',
+        text: "Maybe I'm too busy being yours to fall for somebody new...",
+        author: '1',
+        post: '10'
+    },
+    {
+        id: '104',
+        text: "I used to love her...But I had to kill her...",
+        author: '2',
+        post: '11'
+    },
+    {
+        id: '105',
+        text: "But life still goes on...I want to break free...",
+        author: '3',
+        post: '12'
+    },
+]
+
 // Type Definitions (schema)
 const typeDefs = `
     type Query {
         users(query: String): [User!]!
         posts(query: String): [Post]!
+        comments: [Comment!]!
         me: User!
         post: Post!
     }
@@ -61,6 +90,7 @@ const typeDefs = `
         email: String!
         age: Int,
         posts: [Post!]!
+        comments: [Comment!]!
     }
     type Post {
         id: ID!
@@ -68,6 +98,13 @@ const typeDefs = `
         body: String!
         published: Boolean!
         author: User!
+        comments: [Comment!]!
+    }
+    type Comment {
+        id: ID!
+        text: String!
+        author: User!
+        post: Post!
     }
 `
 
@@ -92,6 +129,9 @@ const resolvers = {
                 return  isTitleMatch || isBodyMatch
             })
         },
+        comments(parents, args, ctx, info) {
+            return comments
+        },
         me() {
             return {
                 id: '123abc',
@@ -114,12 +154,34 @@ const resolvers = {
             return users.find((user) => {
                 return user.id === parent.author
             })
+        },
+        comments(parent, args, ctx, info) {
+            return comments.filter((comment) => {
+                return comment.post === parent.id
+            })
         }
     },
     User: { //Here we're defining the resolver methods of the type "User".
         posts(parent, args, ctx, info) {
             return posts.filter((post) => {
                 return post.author === parent.id
+            })
+        },
+        comments(parent, args, ctx, info) {
+            return comments.filter((comment) => {
+                return comment.author === parent.id
+            })
+        }
+    },
+    Comment: { //Here we're defining the resolver methods of the type "Comment".
+        author(parent, args, ctx, info) {
+            return users.find((user) => {
+                return user.id === parent.author
+            })
+        },
+        post(parent, args, ctx, info) {
+            return posts.find((post) => {
+                return post.id === parent.post
             })
         }
     }
