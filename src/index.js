@@ -165,9 +165,7 @@ const resolvers = {
             }
             const user = {
                 id: uuidv4(), // new random id
-                name: args.name,
-                email: args.email,
-                age: args.age
+                ...args
             }
             users.push(user)
 
@@ -182,10 +180,7 @@ const resolvers = {
             }
             const post = {
                 id: uuidv4(), // new random id
-                title: args.title,
-                body: args.body,
-                published: args.published,
-                author: args.author
+                ...args
             }
             posts.push(post)
 
@@ -199,9 +194,7 @@ const resolvers = {
             }
             const comment = {
                 id: uuidv4(), // new random id
-                text: args.text,
-                author: args.author,
-                post: args.post
+                ...args
             }
             comments.push(comment)
 
